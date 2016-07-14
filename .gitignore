@@ -1,0 +1,11 @@
+.project
+.classpath
+secret.properties
+secret.gradle
+build
+bin
+.gradle
+.settings
+gradle
+gradlew
+gradlew.bat
