@@ -60,5 +60,7 @@ class WebAppBuildGradlePlugin implements Plugin<Project> {
         project.tasks.prepareIntegrationWebAppEnvConfigFiles.inputs.dir "src/integration/webappEnvResources"
         project.tasks.prepareIntegrationWebAppEnvConfigFiles.outputs.dir "build/inplaceWebapp"
         project.tasks.processIntegrationResources.dependsOn "prepareIntegrationWebAppEnvConfigFiles"
+        
+        new AngularConfigurer().configureProject(project)
 	}
 }
