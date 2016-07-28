@@ -1,12 +1,13 @@
 package me.gking2224.wagpi.plugin
 
 import org.gradle.api.Project
+import org.gradle.api.tasks.Exec
+
 
 class AngularConfigurer {
 
     Project project
     public AngularConfigurer() {
-        // TODO Auto-generated constructor stub
     }
     
     def configureProject(Project p) {
@@ -20,11 +21,24 @@ class AngularConfigurer {
         }
     }
     def configureAngularTasks() {
-        project.task("ngBuild") << {
-            
+        project.task("ngBuild", type:Exec) {
+            executable "ng"
+            args("build")
+            args("-e", "${project.env}")
+            args("-o", "${project.envProps.webapp.ng.buildDir}")
         }
-        project.task("ngServe") << {
-            
+        if (project.envProps.webapp.ng.deleteIndexHtml) {
+            project.tasks.ngBuild.doLast {
+                println ("deleting index.html")
+                new File(project.envProps.webapp.ng.buildDir, "index.html").delete()
+            }
+        }
+        project.task("ngServe", type:Exec) {
+            executable "ng"
+            args("serve")
+            args("-e", "${project.env}")
+            args("-op", "${project.envProps.webapp.ng.buildDir}")
+            args("-p", "${project.envProps.webapp.ng.port}")
         }
     }
 
