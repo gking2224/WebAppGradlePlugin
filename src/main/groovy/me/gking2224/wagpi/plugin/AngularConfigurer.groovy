@@ -2,9 +2,12 @@ package me.gking2224.wagpi.plugin
 
 import org.gradle.api.Project
 import org.gradle.api.tasks.Exec
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 
 class AngularConfigurer {
+    Logger logger = LoggerFactory.getLogger(this.class)
 
     Project project
     public AngularConfigurer() {
@@ -29,8 +32,33 @@ class AngularConfigurer {
         }
         if (project.envProps.webapp.ng.deleteIndexHtml) {
             project.tasks.ngBuild.doLast {
-                println ("deleting index.html")
+                logger.debug("deleting index.html")
                 new File(project.envProps.webapp.ng.buildDir, "index.html").delete()
+            }
+        }
+        if (project.env=="prod") {
+            project.tasks.ngBuild.doLast {
+                logger.debug("Copying d3 files to ${project.envProps.webapp.ng.buildDir}")
+                ant.copy(todir:"${project.envProps.webapp.ng.buildDir}/vendor/d3/") {
+                    fileset(dir:"node_modules/d3/") {
+                        include(name:"**/*.js")
+                        include(name:"**/*.css")
+                    }
+                }
+                logger.debug("Copying codemirror files to ${project.envProps.webapp.ng.buildDir}")
+                ant.copy(todir:"${project.envProps.webapp.ng.buildDir}/vendor/codemirror/") {
+                    fileset(dir:"node_modules/codemirror/") {
+                        include(name:"**/*.js")
+                        include(name:"**/*.css")
+                    }
+                }
+                logger.debug("Copying dateformat files to ${project.envProps.webapp.ng.buildDir}")
+                ant.copy(todir:"${project.envProps.webapp.ng.buildDir}/vendor/dateformat/") {
+                    fileset(dir:"node_modules/dateformat/") {
+                        include(name:"**/*.js")
+                        include(name:"**/*.css")
+                    }
+                }
             }
         }
         project.task("ngServe", type:Exec) {
